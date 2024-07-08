@@ -1,43 +1,16 @@
 import express from 'express';
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import cors from 'cors';
+import courseController from './controllers/courseController';
+import { setupDatabase } from './db/setup';
 
 const app = express();
 const port = 5000;
 
-async function setupDatabase() {
-  const db = await open({
-    filename: ':memory:',
-    driver: sqlite3.Database
-  });
-
-  await db.exec('CREATE TABLE test (id INTEGER PRIMARY KEY, name TEXT)');
-  await db.run('INSERT INTO test (name) VALUES (?)', 'Test User');
-  return db;
-}
-
-const dbPromise = setupDatabase();
-
-/**
- * @swagger
- * /:
- *   get:
- *     summary: Retrieve a single user name
- *     responses:
- *       200:
- *         description: A single user name
- *         content:
- *           application/json:
- *             schema:
- *               type: string
- */
-app.get('/', async (req, res) => {
-  const db = await dbPromise;
-  const result = await db.get('SELECT name FROM test WHERE id = 1');
-  res.send(result ? result.name : 'No data');
-});
+app.use(cors());
+app.use(express.json());
+app.use('/api', courseController);
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -53,13 +26,15 @@ const swaggerOptions = {
       }
     ]
   },
-  apis: ['./src/*.ts']
+  apis: ['./src/**/*.ts']
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-  console.log(`Swagger docs available at http://localhost:${port}/api-docs`);
+setupDatabase().then(() => {
+  app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`Swagger docs available at http://localhost:${port}/api-docs`);
+  });
 });
