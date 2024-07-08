@@ -8,10 +8,12 @@ import { Course } from '../types/Course';
 const CoursesPage: React.FC = () => {
   const [ongoingCourses, setOngoingCourses] = useState<Course[]>([]);
   const [recommendedCourses, setRecommendedCourses] = useState<Course[]>([]);
+  const [hasMoreOngoing, setHasMoreOngoing] = useState(true);
+  const [hasMoreRecommended, setHasMoreRecommended] = useState(true);
   const userId = new URLSearchParams(window.location.search).get('user');
 
   useEffect(() => {
-    // Fetch courses data from API
+    // Fetch initial courses data from API
     const fetchCourses = async () => {
       const ongoingResponse = await axios.get(`http://localhost:5000/api/courses/ongoing?user=${userId}`);
       setOngoingCourses(ongoingResponse.data);
@@ -34,13 +36,37 @@ const CoursesPage: React.FC = () => {
     }));
   };
 
+  const loadMoreOngoingCourses = async () => {
+    const response = await axios.get(`http://localhost:5000/api/courses/ongoing?user=${userId}&offset=${ongoingCourses.length}`);
+    const newCourses = response.data;
+    setOngoingCourses((prevCourses) => [...prevCourses, ...newCourses]);
+    if (newCourses.length === 0) setHasMoreOngoing(false);
+  };
+
+  const loadMoreRecommendedCourses = async () => {
+    const response = await axios.get(`http://localhost:5000/api/courses/recommended?user=${userId}&offset=${recommendedCourses.length}`);
+    const newCourses = response.data;
+    setRecommendedCourses((prevCourses) => [...prevCourses, ...newCourses]);
+    if (newCourses.length === 0) setHasMoreRecommended(false);
+  };
+
   return (
     <Container>
       <Typography variant="h4">Continue Learning</Typography>
-      <CourseList courses={ongoingCourses} onLike={handleLike} />
+      <CourseList
+        courses={ongoingCourses}
+        onLike={handleLike}
+        loadMoreCourses={loadMoreOngoingCourses}
+        hasMoreCourses={hasMoreOngoing}
+      />
 
       <Typography variant="h4">You Might Also Like</Typography>
-      <CourseList courses={recommendedCourses} onLike={handleLike} />
+      <CourseList
+        courses={recommendedCourses}
+        onLike={handleLike}
+        loadMoreCourses={loadMoreRecommendedCourses}
+        hasMoreCourses={hasMoreRecommended}
+      />
     </Container>
   );
 };
