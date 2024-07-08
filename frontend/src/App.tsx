@@ -1,23 +1,27 @@
-import React, { useContext } from 'react';
-import AppProvider, { AppContext } from './context/AppContext';
-
+import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { CoursesProvider } from './context/CoursesContext';
+import CoursesPage from './components/CoursesPage';
+import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
 
-
-const Home: React.FC = () => {
-  const context = useContext(AppContext);
-  return <div>Home {context?.user}</div>;
-};
-const About: React.FC = () => <div>About</div>;
+const theme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-      </Routes>
-    </Router>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <CoursesProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<CoursesPage />} />
+          </Routes>
+        </Router>
+      </CoursesProvider>
+    </ThemeProvider>
   );
 };
 
