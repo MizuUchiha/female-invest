@@ -31,10 +31,13 @@ const CourseCard: React.FC<CourseCardProps> = ({
     <Card>
       <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', height: '150px', overflow: 'hidden' }}>
         <img src={`courses_covers/${coverImage}`} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        <div style={{ position: 'absolute', top: 10, right: 10, backgroundColor: '#1976d2', color: '#fff', padding: '2px 8px', borderRadius: '0 0 0 8px' }}>
-          {progress}% completed
-        </div>
+        {progress > 0 && (
+          <div style={{ position: 'absolute', top: 10, right: 10, backgroundColor: '#1976d2', color: '#fff', padding: '2px 8px', borderRadius: '0 0 0 8px' }}>
+            {progress}% completed
+          </div>
+        )}
       </div>
+
       <CardContent>
         <Typography variant="h5">{title}</Typography>
         <Typography variant="subtitle1">{author}</Typography>

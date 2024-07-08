@@ -1,4 +1,3 @@
-
 import request from 'supertest';
 import express from 'express';
 import { setupDatabase } from '../src/db/setup';
@@ -20,7 +19,7 @@ afterAll(async () => {
 
 describe('GET /api/courses/ongoing', () => {
   it('should fetch ongoing courses', async () => {
-    const response = await request(app).get('/api/courses/ongoing');
+    const response = await request(app).get('/api/courses/ongoing?user=1');
     expect(response.status).toBe(200);
     expect(response.body).toEqual(expect.any(Array));
   });
@@ -28,7 +27,7 @@ describe('GET /api/courses/ongoing', () => {
 
 describe('GET /api/courses/recommended', () => {
   it('should fetch recommended courses', async () => {
-    const response = await request(app).get('/api/courses/recommended');
+    const response = await request(app).get('/api/courses/recommended?user=1');
     expect(response.status).toBe(200);
     expect(response.body).toEqual(expect.any(Array));
   });
@@ -36,7 +35,16 @@ describe('GET /api/courses/recommended', () => {
 
 describe('POST /api/courses/:id/like', () => {
   it('should like a course', async () => {
-    const response = await request(app).post('/api/courses/1/like');
+    const response = await request(app)
+      .post('/api/courses/1/like?user=1')
+      .send({ like: true });
+    expect(response.status).toBe(200);
+  });
+
+  it('should unlike a course', async () => {
+    const response = await request(app)
+      .post('/api/courses/1/like?user=1')
+      .send({ like: false });
     expect(response.status).toBe(200);
   });
 });
