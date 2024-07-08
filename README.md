@@ -33,6 +33,8 @@ backend/
 │   ├── index.ts
 │   └── ...
 
+```
+
 ## Prerequisites
 
 - Node.js
