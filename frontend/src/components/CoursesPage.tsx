@@ -23,11 +23,10 @@ const CoursesPage: React.FC = () => {
   }, []);
 
   const handleLike = (id: string) => {
-    // Implement like functionality
-    axios.post(`http://localhost:5000/api/courses/${id}/like`);
-    // then update like count in the UI
     setOngoingCourses(ongoingCourses.map(course => {
       if (course.id === id) {
+        const liked = !course.liked;
+        axios.post(`http://localhost:5000/api/courses/${id}/like`, { like: liked });
         return { ...course, liked: !course.liked, likes: course.liked ? course.likes - 1 : course.likes + 1 };
       }
       return course;

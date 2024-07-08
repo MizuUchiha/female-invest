@@ -16,8 +16,10 @@ router.get('/courses/recommended', async (req, res) => {
 
 router.post('/courses/:id/like', async (req, res) => {
   const courseId = parseInt(req.params.id, 10);
-  await likeOrUnlikeCourse(courseId);
+  const { like } = req.body;
+  await likeOrUnlikeCourse(courseId, like);
   res.status(200).send();
 });
+
 
 export default router;

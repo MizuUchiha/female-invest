@@ -16,3 +16,8 @@ export async function likeCourse(courseId: number): Promise<void> {
   const db = await getDatabase();
   await db.run('UPDATE courses SET likes = likes + 1 WHERE id = ?', courseId);
 }
+
+export async function unlikeCourse(courseId: number): Promise<void> {
+  const db = await getDatabase();
+  await db.run('UPDATE courses SET likes = likes - 1 WHERE id = ?', courseId);
+}
